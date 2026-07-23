@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import GoogleSignIn from "./google-signin";
+import ImageUpload from "./image-upload";
 const schema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email(),
@@ -26,6 +27,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
     register: field,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Values>({
     resolver: zodResolver(schema),
@@ -72,6 +74,13 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
                 placeholder="https://..."
               />
             </label>
+            <ImageUpload
+              label="Upload profile picture"
+              value={watch("photo") || ""}
+              onChange={(photo) =>
+                setValue("photo", photo, { shouldValidate: true })
+              }
+            />
           </>
         )}
         <label className="block text-sm font-bold">

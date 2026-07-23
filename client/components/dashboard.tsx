@@ -991,6 +991,13 @@ function ProfileModal({
             onChange={(e) => setValue({ ...value, photo: e.target.value })}
           />
         </label>
+        <div className="mt-4">
+          <ImageUpload
+            label="Upload profile picture"
+            value={value.photo || ""}
+            onChange={(photo) => setValue({ ...value, photo })}
+          />
+        </div>
         <button onClick={onSave} className="btn-primary mt-5 w-full">
           Save profile
         </button>
