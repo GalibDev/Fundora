@@ -11,7 +11,7 @@ const contacts = [
 
 export default function Footer() {
   return (
-    <footer className="mt-24 bg-ink text-white">
+    <footer className="mt-12 bg-ink text-white">
       <div className="container-app grid gap-10 py-14 md:grid-cols-3">
         <div>
           <div className="text-2xl font-black"><span className="text-lime">F</span>undora</div>
@@ -21,6 +21,7 @@ export default function Footer() {
           <Link href="/explore">Explore projects</Link>
           <Link href="/register">Start a campaign</Link>
           <Link href="/login">Sign in</Link>
+          <a href="https://github.com/GalibDev/Fundora" target="_blank" rel="noreferrer">Join as developer</a>
           <a href="mailto:mirza.galib.palash@gmail.com">mirza.galib.palash@gmail.com</a>
           <a href="tel:+8801577088342">01577088342</a>
         </div>

@@ -24,6 +24,8 @@ const closingSoon = (items: Campaign[]) =>
     .filter((campaign) => new Date(campaign.deadline).getTime() > Date.now())
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
     .slice(0, 6);
+const topFunded = (items: Campaign[]) =>
+  [...items].sort((a, b) => (b.raised || 0) - (a.raised || 0)).slice(0, 6);
 const reveal = {
   initial: { opacity: 0, y: 22 },
   whileInView: { opacity: 1, y: 0 },
@@ -33,8 +35,8 @@ const reveal = {
 export default function Home() {
   const [slide, setSlide] = useState(0);
   const [quote, setQuote] = useState(0);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [campaignLoading, setCampaignLoading] = useState(true);
+  const [closingCampaigns, setClosingCampaigns] = useState<Campaign[]>([]);
+  const [fundedCampaigns, setFundedCampaigns] = useState<Campaign[]>([]);
   const banners = [
     [
       "Small credits.",
@@ -58,9 +60,11 @@ export default function Home() {
       5000,
     );
     api<{ items: Campaign[] }>("/campaigns?limit=6&sort=deadline")
-      .then((r) => setCampaigns(r.items.length >= 6 ? closingSoon(r.items) : closingSoon(fallback)))
-      .catch(() => setCampaigns(closingSoon(fallback)))
-      .finally(() => setCampaignLoading(false));
+      .then((r) => setClosingCampaigns(r.items.length >= 6 ? closingSoon(r.items) : closingSoon(fallback)))
+      .catch(() => setClosingCampaigns(closingSoon(fallback)));
+    api<{ items: Campaign[] }>("/campaigns?limit=6&sort=highest")
+      .then((r) => setFundedCampaigns(r.items.length >= 6 ? topFunded(r.items) : topFunded(fallback)))
+      .catch(() => setFundedCampaigns(topFunded(fallback)));
     return () => clearInterval(timer);
   }, []);
   return (
@@ -125,6 +129,18 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className="container-app py-10 md:py-16">
+          <motion.div {...reveal} className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Top funded campaigns</p>
+              <h2 className="mt-2 text-4xl font-black tracking-tight md:text-5xl">Big ideas with real momentum</h2>
+            </div>
+            <Link href="/explore" className="hidden shrink-0 font-bold md:block">View more →</Link>
+          </motion.div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+            {fundedCampaigns.map((campaign) => <CampaignCard key={campaign._id} campaign={campaign} />)}
+          </div>
+        </section>
         <section className="container-app py-16">
           <motion.div
             {...reveal}
@@ -140,8 +156,8 @@ export default function Home() {
               View more →
             </Link>
           </motion.div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {campaigns.map((c) => (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+            {closingCampaigns.map((c) => (
               <CampaignCard key={c._id} campaign={c} />
             ))}
           </div>
