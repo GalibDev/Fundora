@@ -6,8 +6,8 @@ Fundora is a full-stack crowdfunding platform where supporters fund meaningful p
 
 - Admin email: `admin@fundora.com`
 - Admin password: `Admin123!` (created by the seed script; change it before production)
-- Frontend live URL: add your Vercel URL after deployment
-- Backend live URL: add your Render URL after deployment
+- Frontend live URL: not published yet — deploy `client` to Vercel and replace this line with the generated URL
+- Backend live URL: not published yet — deploy the Render Blueprint and replace this line with the generated URL
 - Repository: https://github.com/GalibDev/Fundora
 
 ## Features
@@ -61,6 +61,18 @@ Subscribe it to `checkout.session.completed` and copy the webhook signing secret
 2. Vercel: import this repository, set **Root Directory** to `client`, add the client variables, then deploy.
 3. Set `CLIENT_URL` on Render to the Vercel origin and `NEXT_PUBLIC_API_URL` on Vercel to `https://YOUR-RENDER-URL/api`.
 4. Run the seed script locally against the production Atlas database once.
+
+### Google Sign-In
+
+Create a Web OAuth client in Google Cloud Console. Add its client ID as
+`NEXT_PUBLIC_GOOGLE_CLIENT_ID` on Vercel and `GOOGLE_CLIENT_ID` on Render. Add
+both the Vercel origin and `http://localhost:3000` to the authorized origins.
+
+### Optional email notifications
+
+Set `RESEND_API_KEY` and `EMAIL_FROM` on Render to enable transactional emails
+for campaign decisions and contribution decisions. If `RESEND_API_KEY` is
+empty, the platform continues to work using in-app notifications only.
 
 ## Business rules
 
