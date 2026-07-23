@@ -21,9 +21,9 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <Image src={campaign.image} alt={campaign.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover transition duration-500 group-hover:scale-105" />
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold backdrop-blur">{campaign.category}</span>
       </div>
-      <div className="flex h-[230px] flex-col p-5 sm:p-6">
+      <div className="flex min-h-[230px] flex-col p-5 sm:p-6">
         <p className="text-xs font-bold text-forest">by {campaign.creatorName}</p>
-        <h3 className="mt-2 line-clamp-2 text-xl font-black leading-tight">{campaign.title}</h3>
+        <h3 className="mt-2 break-words text-xl font-black leading-tight">{campaign.title}</h3>
         <div className="mt-5 h-2 overflow-hidden rounded-full bg-black/5"><div className="h-full rounded-full bg-forest transition-all duration-500" style={{ width: `${percentage}%` }} /></div>
         <div className="mt-3 flex justify-between text-sm"><strong>{(campaign.raised || 0).toLocaleString()} credits raised</strong><span className="text-black/50">{percentage}%</span></div>
         <div className="mt-1 text-xs text-black/45">Funding goal: {(campaign.goal || 0).toLocaleString()} credits</div>
