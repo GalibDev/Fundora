@@ -1,15 +1,270 @@
 "use client";
-import { motion } from "framer-motion";import { ArrowRight,CheckCircle2,HeartHandshake,Lightbulb,ShieldCheck,Sparkles,ChevronLeft,ChevronRight } from "lucide-react";import Link from "next/link";import Image from "next/image";import {useEffect,useState} from "react";
-import Navbar from "./navbar";import Footer from "./footer";import CampaignCard from "./campaign-card";import {campaigns as fallback,testimonials} from "@/lib/data";import {Campaign} from "@/lib/types";import {api} from "@/lib/api";
-const reveal={initial:{opacity:0,y:22},whileInView:{opacity:1,y:0},viewport:{once:true},transition:{duration:.55}};
-export default function Home(){
- const [slide,setSlide]=useState(0);const [quote,setQuote]=useState(0);const [campaigns,setCampaigns]=useState<Campaign[]>([]);const [campaignLoading,setCampaignLoading]=useState(true);const banners=[["Small credits.","Big beginnings.","Discover people with brave ideas, follow every milestone, and help turn local imagination into lasting impact."],["Back the bold.","Build the better.","From climate action to community health, fund projects that make tomorrow feel closer."],["Your belief","starts here.","Give a creator the momentum they need to take their next meaningful step."]];useEffect(()=>{const timer=setInterval(()=>setSlide(s=>(s+1)%banners.length),5000);api<{items:Campaign[]}>("/campaigns?limit=6&sort=highest").then(r=>setCampaigns(r.items)).catch(()=>setCampaigns(fallback)).finally(()=>setCampaignLoading(false));return()=>clearInterval(timer)},[]);
- return <><Navbar/><main>
- <section className="container-app py-8 md:py-14"><div className="relative overflow-hidden rounded-[2.5rem] bg-ink px-7 py-16 text-white md:px-16 md:py-24"><div className="absolute -right-20 -top-24 size-80 rounded-full bg-lime/20 blur-3xl"/><motion.div key={slide} {...reveal} className="relative z-10 max-w-3xl"><div className="eyebrow !text-lime">Community capital, real change</div><h1 className="mt-5 text-5xl font-black leading-[.95] tracking-[-.05em] md:text-8xl">{banners[slide][0]}<br/><span className="text-lime">{banners[slide][1]}</span></h1><p className="mt-7 max-w-xl text-lg leading-8 text-white/70">{banners[slide][2]}</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/explore" className="btn-lime">Explore ideas <ArrowRight className="ml-2" size={18}/></Link><Link href="/register" className="rounded-full border border-white/20 px-6 py-3 font-bold">Launch your idea</Link></div></motion.div><div className="absolute bottom-8 right-10 hidden rotate-3 rounded-2xl bg-white p-4 text-ink shadow-2xl lg:block"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-full bg-lime"><Sparkles/></span><div><b>৳1.2M+ impact</b><p className="text-xs text-black/50">created this month</p></div></div></div><div className="absolute bottom-8 right-8 flex gap-2 md:right-12"><button onClick={()=>setSlide((slide+2)%3)} className="grid size-10 place-items-center rounded-full border border-white/30"><ChevronLeft size={18}/></button><button onClick={()=>setSlide((slide+1)%3)} className="grid size-10 place-items-center rounded-full bg-lime text-ink"><ChevronRight size={18}/></button></div></div></section>
- <section className="container-app py-16"><motion.div {...reveal} className="mb-8 flex items-end justify-between"><div><p className="eyebrow">Momentum matters</p><h2 className="mt-2 text-4xl font-black tracking-tight md:text-5xl">Ideas people believe in</h2></div><Link href="/explore" className="hidden font-bold md:block">View all →</Link></motion.div><div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{campaigns.map(c=><CampaignCard key={c._id} campaign={c}/>)}</div></section>
- <section className="container-app py-16"><div className="grid overflow-hidden rounded-[2.5rem] bg-lime lg:grid-cols-2"><div className="p-8 md:p-14"><p className="eyebrow">How it works</p><h2 className="mt-3 text-4xl font-black tracking-tight">From a spark to a shared success.</h2><div className="mt-10 space-y-7">{[[Lightbulb,"Tell your story","Set a goal, add rewards and show the world why your idea matters."],[HeartHandshake,"Find your people","Supporters contribute credits and follow your progress."],[CheckCircle2,"Deliver the impact","Share updates, reach milestones and withdraw approved funds."]].map(([Icon,title,text],i)=><div className="flex gap-4" key={String(title)}><span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">{i+1}</span><div><h3 className="font-black">{String(title)}</h3><p className="mt-1 text-sm leading-6 text-black/65">{String(text)}</p></div></div>)}</div></div><div className="relative min-h-96"><Image src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80" alt="Community planning a project" fill className="object-cover"/></div></div></section>
- <section className="container-app grid gap-5 py-16 md:grid-cols-3">{[["1,240+","ideas launched"],["86%","funds reach creators"],["42K","community supporters"]].map(([n,l])=><motion.div {...reveal} key={l} className="card p-8 text-center"><div className="text-5xl font-black">{n}</div><div className="mt-2 text-black/50">{l}</div></motion.div>)}</section>
- <section className="container-app py-16"><div className="text-center"><p className="eyebrow">Built on trust</p><h2 className="mt-3 text-4xl font-black">What our community says</h2></div><div className="mx-auto mt-9 max-w-2xl"><motion.div key={quote} {...reveal} className="card p-8 text-center md:p-12"><p className="text-xl leading-8">“{testimonials[quote].quote}”</p><div className="mt-6 flex items-center justify-center gap-3"><Image src={testimonials[quote].photo} alt={testimonials[quote].name} width={48} height={48} className="rounded-full"/><div className="text-left"><b>{testimonials[quote].name}</b><p className="text-xs text-black/50">{testimonials[quote].role}</p></div></div><div className="mt-7 flex justify-center gap-2"><button onClick={()=>setQuote((quote+2)%3)} className="grid size-9 place-items-center rounded-full bg-cream"><ChevronLeft size={16}/></button><button onClick={()=>setQuote((quote+1)%3)} className="grid size-9 place-items-center rounded-full bg-ink text-white"><ChevronRight size={16}/></button></div></motion.div></div></section>
- <section className="container-app py-16"><div className="rounded-[2.5rem] bg-forest p-10 text-center text-white md:p-16"><ShieldCheck className="mx-auto text-lime" size={42}/><h2 className="mt-5 text-4xl font-black">Good ideas deserve a fair start.</h2><p className="mx-auto mt-4 max-w-xl text-white/65">Every campaign is reviewed, every contribution is tracked, and every creator is accountable to their supporters.</p><Link href="/register" className="btn-lime mt-8">Start with 20 free credits</Link></div></section>
- </main><Footer/></>
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  CheckCircle2,
+  HeartHandshake,
+  Lightbulb,
+  ShieldCheck,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import Navbar from "./navbar";
+import Footer from "./footer";
+import CampaignCard from "./campaign-card";
+import { campaigns as fallback, testimonials } from "@/lib/data";
+import { Campaign } from "@/lib/types";
+import { api } from "@/lib/api";
+const reveal = {
+  initial: { opacity: 0, y: 22 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.55 },
+};
+export default function Home() {
+  const [slide, setSlide] = useState(0);
+  const [quote, setQuote] = useState(0);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaignLoading, setCampaignLoading] = useState(true);
+  const banners = [
+    [
+      "Small credits.",
+      "Big beginnings.",
+      "Discover people with brave ideas, follow every milestone, and help turn local imagination into lasting impact.",
+    ],
+    [
+      "Back the bold.",
+      "Build the better.",
+      "From climate action to community health, fund projects that make tomorrow feel closer.",
+    ],
+    [
+      "Your belief",
+      "starts here.",
+      "Give a creator the momentum they need to take their next meaningful step.",
+    ],
+  ];
+  useEffect(() => {
+    const timer = setInterval(
+      () => setSlide((s) => (s + 1) % banners.length),
+      5000,
+    );
+    api<{ items: Campaign[] }>("/campaigns?limit=6&sort=highest")
+      .then((r) => setCampaigns(r.items.length ? r.items : fallback))
+      .catch(() => setCampaigns(fallback))
+      .finally(() => setCampaignLoading(false));
+    return () => clearInterval(timer);
+  }, []);
+  return (
+    <>
+      <Navbar />
+      <main>
+        <section className="container-app py-8 md:py-14">
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-ink px-7 py-16 text-white md:px-16 md:py-24">
+            <div className="absolute -right-20 -top-24 size-80 rounded-full bg-lime/20 blur-3xl" />
+            <motion.div
+              key={slide}
+              {...reveal}
+              className="relative z-10 max-w-3xl"
+            >
+              <div className="eyebrow !text-lime">
+                Community capital, real change
+              </div>
+              <h1 className="mt-5 text-5xl font-black leading-[.95] tracking-[-.05em] md:text-8xl">
+                {banners[slide][0]}
+                <br />
+                <span className="text-lime">{banners[slide][1]}</span>
+              </h1>
+              <p className="mt-7 max-w-xl text-lg leading-8 text-white/70">
+                {banners[slide][2]}
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link href="/explore" className="btn-lime">
+                  Explore ideas <ArrowRight className="ml-2" size={18} />
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-full border border-white/20 px-6 py-3 font-bold"
+                >
+                  Launch your idea
+                </Link>
+              </div>
+            </motion.div>
+            <div className="absolute bottom-8 right-10 hidden rotate-3 rounded-2xl bg-white p-4 text-ink shadow-2xl lg:block">
+              <div className="flex items-center gap-3">
+                <span className="grid size-11 place-items-center rounded-full bg-lime">
+                  <Sparkles />
+                </span>
+                <div>
+                  <b>৳1.2M+ impact</b>
+                  <p className="text-xs text-black/50">created this month</p>
+                </div>
+              </div>
+            </div>
+            <div className="absolute bottom-8 right-8 flex gap-2 md:right-12">
+              <button
+                onClick={() => setSlide((slide + 2) % 3)}
+                className="grid size-10 place-items-center rounded-full border border-white/30"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() => setSlide((slide + 1) % 3)}
+                className="grid size-10 place-items-center rounded-full bg-lime text-ink"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        </section>
+        <section className="container-app py-16">
+          <motion.div
+            {...reveal}
+            className="mb-8 flex items-end justify-between"
+          >
+            <div>
+              <p className="eyebrow">Momentum matters</p>
+              <h2 className="mt-2 text-4xl font-black tracking-tight md:text-5xl">
+                Ideas people believe in
+              </h2>
+            </div>
+            <Link href="/explore" className="hidden font-bold md:block">
+              View all →
+            </Link>
+          </motion.div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {campaigns.map((c) => (
+              <CampaignCard key={c._id} campaign={c} />
+            ))}
+          </div>
+        </section>
+        <section className="container-app py-16">
+          <div className="grid overflow-hidden rounded-[2.5rem] bg-lime lg:grid-cols-2">
+            <div className="p-8 md:p-14">
+              <p className="eyebrow">How it works</p>
+              <h2 className="mt-3 text-4xl font-black tracking-tight">
+                From a spark to a shared success.
+              </h2>
+              <div className="mt-10 space-y-7">
+                {[
+                  [
+                    Lightbulb,
+                    "Tell your story",
+                    "Set a goal, add rewards and show the world why your idea matters.",
+                  ],
+                  [
+                    HeartHandshake,
+                    "Find your people",
+                    "Supporters contribute credits and follow your progress.",
+                  ],
+                  [
+                    CheckCircle2,
+                    "Deliver the impact",
+                    "Share updates, reach milestones and withdraw approved funds.",
+                  ],
+                ].map(([Icon, title, text], i) => (
+                  <div className="flex gap-4" key={String(title)}>
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <h3 className="font-black">{String(title)}</h3>
+                      <p className="mt-1 text-sm leading-6 text-black/65">
+                        {String(text)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative min-h-96">
+              <Image
+                src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80"
+                alt="Community planning a project"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        </section>
+        <section className="container-app grid gap-5 py-16 md:grid-cols-3">
+          {[
+            ["1,240+", "ideas launched"],
+            ["86%", "funds reach creators"],
+            ["42K", "community supporters"],
+          ].map(([n, l]) => (
+            <motion.div {...reveal} key={l} className="card p-8 text-center">
+              <div className="text-5xl font-black">{n}</div>
+              <div className="mt-2 text-black/50">{l}</div>
+            </motion.div>
+          ))}
+        </section>
+        <section className="container-app py-16">
+          <div className="text-center">
+            <p className="eyebrow">Built on trust</p>
+            <h2 className="mt-3 text-4xl font-black">
+              What our community says
+            </h2>
+          </div>
+          <div className="mx-auto mt-9 max-w-2xl">
+            <motion.div
+              key={quote}
+              {...reveal}
+              className="card p-8 text-center md:p-12"
+            >
+              <p className="text-xl leading-8">“{testimonials[quote].quote}”</p>
+              <div className="mt-6 flex items-center justify-center gap-3">
+                <Image
+                  src={testimonials[quote].photo}
+                  alt={testimonials[quote].name}
+                  width={48}
+                  height={48}
+                  className="rounded-full"
+                />
+                <div className="text-left">
+                  <b>{testimonials[quote].name}</b>
+                  <p className="text-xs text-black/50">
+                    {testimonials[quote].role}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-7 flex justify-center gap-2">
+                <button
+                  onClick={() => setQuote((quote + 2) % 3)}
+                  className="grid size-9 place-items-center rounded-full bg-cream"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={() => setQuote((quote + 1) % 3)}
+                  className="grid size-9 place-items-center rounded-full bg-ink text-white"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+        <section className="container-app py-16">
+          <div className="rounded-[2.5rem] bg-forest p-10 text-center text-white md:p-16">
+            <ShieldCheck className="mx-auto text-lime" size={42} />
+            <h2 className="mt-5 text-4xl font-black">
+              Good ideas deserve a fair start.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-white/65">
+              Every campaign is reviewed, every contribution is tracked, and
+              every creator is accountable to their supporters.
+            </p>
+            <Link href="/register" className="btn-lime mt-8">
+              Start with 20 free credits
+            </Link>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
 }

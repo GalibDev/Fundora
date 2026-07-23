@@ -6,6 +6,7 @@ import { campaigns as demo } from "@/lib/data";
 import { useRouter } from "next/navigation";
 import {
   Bell,
+  ArrowLeft,
   Coins,
   FolderKanban,
   Heart,
@@ -198,18 +199,33 @@ export default function Dashboard() {
     loadTab(tab);
   };
   const updateUserRole = async (id: string, nextRole: string) => {
-    await api(`/admin/users/${id}/role`, {method:"PATCH",body:JSON.stringify({role:nextRole})});
-    toast.success("User role updated");loadTab("Manage users");
+    await api(`/admin/users/${id}/role`, {
+      method: "PATCH",
+      body: JSON.stringify({ role: nextRole }),
+    });
+    toast.success("User role updated");
+    loadTab("Manage users");
   };
   const removeUser = async (id: string) => {
-    if(!confirm("Remove this user permanently?"))return;
-    await api(`/admin/users/${id}`,{method:"DELETE"});toast.success("User removed");loadTab("Manage users");
+    if (!confirm("Remove this user permanently?")) return;
+    await api(`/admin/users/${id}`, { method: "DELETE" });
+    toast.success("User removed");
+    loadTab("Manage users");
   };
   const approveWithdrawal = async (id: string) => {
-    await api(`/withdrawals/${id}/approve`,{method:"PATCH"});toast.success("Withdrawal processed");loadTab("Withdrawal requests");
+    await api(`/withdrawals/${id}/approve`, { method: "PATCH" });
+    toast.success("Withdrawal processed");
+    loadTab("Withdrawal requests");
   };
-  const resolveReport = async (id:string,action="resolve")=>{
-    await api(`/admin/reports/${id}`,{method:"PATCH",body:JSON.stringify({status:"resolved",action})});toast.success(action==="suspend"?"Campaign suspended":"Report resolved");loadTab("Reports");
+  const resolveReport = async (id: string, action = "resolve") => {
+    await api(`/admin/reports/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "resolved", action }),
+    });
+    toast.success(
+      action === "suspend" ? "Campaign suspended" : "Report resolved",
+    );
+    loadTab("Reports");
   };
   const deleteCampaign = async (id: string) => {
     if (!confirm("Delete this campaign and refund approved supporters?"))
@@ -328,9 +344,17 @@ export default function Dashboard() {
       </aside>
       <main className="lg:ml-72">
         <header className="flex h-20 items-center justify-between border-b border-black/5 bg-white px-5 md:px-8">
-          <button className="lg:hidden" onClick={() => setMenu(true)}>
-            <Menu />
-          </button>
+          <div className="flex items-center gap-3">
+            <button className="lg:hidden" onClick={() => setMenu(true)}>
+              <Menu />
+            </button>
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-full bg-cream px-3 py-2 text-sm font-bold"
+            >
+              <ArrowLeft size={16} /> Home
+            </Link>
+          </div>
           <div className="hidden md:block">
             <p className="text-xs text-black/40">Workspace</p>
             <b>{tab}</b>
@@ -375,11 +399,11 @@ export default function Dashboard() {
                         if (n.actionRoute) router.push(n.actionRoute);
                         notify();
                       }}
-                        className={`block w-full rounded-xl p-3 text-left text-sm ${n.isRead ? "" : "bg-cream"}`}
+                      className={`block w-full rounded-xl p-3 text-left text-sm ${n.isRead ? "" : "bg-cream"}`}
                     >
                       {n.message}
                       <small className="mt-1 block text-black/40">
-                          {new Date(n.time || n.createdAt).toLocaleString()}
+                        {new Date(n.time || n.createdAt).toLocaleString()}
                       </small>
                     </button>
                   ))}
@@ -461,7 +485,12 @@ export default function Dashboard() {
             />
           )}{" "}
           {tab === "My campaigns" && (
-            <CampaignTable items={filtered} creator onDelete={deleteCampaign} onEdit={editCampaign} />
+            <CampaignTable
+              items={filtered}
+              creator
+              onDelete={deleteCampaign}
+              onEdit={editCampaign}
+            />
           )}{" "}
           {tab === "Explore campaigns" && (
             <ExploreTable items={filtered} onContribute={contribute} />
@@ -701,7 +730,7 @@ function CampaignTable({
   items: Item[];
   creator?: boolean;
   onDelete: (id: string) => void;
-  onEdit:(item:Item)=>void;
+  onEdit: (item: Item) => void;
 }) {
   return (
     <div className="card mt-8 overflow-x-auto p-5">
@@ -721,7 +750,13 @@ function CampaignTable({
               <td className="p-3">{c.status}</td>
               <td className="p-3">{c.raised || 0}</td>
               <td className="flex gap-2 p-3">
-                <button aria-label="Edit campaign" onClick={()=>onEdit(c)} className="rounded-full bg-lime/30 p-2 text-forest"><Edit3 size={16}/></button>
+                <button
+                  aria-label="Edit campaign"
+                  onClick={() => onEdit(c)}
+                  className="rounded-full bg-lime/30 p-2 text-forest"
+                >
+                  <Edit3 size={16} />
+                </button>
                 <button
                   onClick={() => onDelete(c._id)}
                   className="rounded-full bg-red-50 p-2 text-red-600"
@@ -747,7 +782,11 @@ function DataTable({
   onStatus,
   onApprove,
   onDelete,
-  role,onUserRole,onRemoveUser,onWithdrawal,onReport,
+  role,
+  onUserRole,
+  onRemoveUser,
+  onWithdrawal,
+  onReport,
 }: {
   tab: string;
   items: Item[];
@@ -759,7 +798,11 @@ function DataTable({
   onStatus: (id: string, s: string) => void;
   onApprove: (id: string, s: string) => void;
   onDelete: (id: string) => void;
-  role:string;onUserRole:(id:string,role:string)=>void;onRemoveUser:(id:string)=>void;onWithdrawal:(id:string)=>void;onReport:(id:string,action?:string)=>void;
+  role: string;
+  onUserRole: (id: string, role: string) => void;
+  onRemoveUser: (id: string) => void;
+  onWithdrawal: (id: string) => void;
+  onReport: (id: string, action?: string) => void;
 }) {
   return (
     <div className="mt-8">
@@ -795,22 +838,24 @@ function DataTable({
                 </td>
                 <td className="p-3">{i.status || "—"}</td>
                 <td className="flex gap-2 p-3">
-                  {role === "creator" && tab === "My contributions" && i.status === "pending" && (
-                    <>
-                      <button
-                        onClick={() => onStatus(i._id, "approved")}
-                        className="rounded-full bg-green-100 p-2 text-green-700"
-                      >
-                        <Check size={16} />
-                      </button>
-                      <button
-                        onClick={() => onStatus(i._id, "rejected")}
-                        className="rounded-full bg-red-100 p-2 text-red-700"
-                      >
-                        <X size={16} />
-                      </button>
-                    </>
-                  )}
+                  {role === "creator" &&
+                    tab === "My contributions" &&
+                    i.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() => onStatus(i._id, "approved")}
+                          className="rounded-full bg-green-100 p-2 text-green-700"
+                        >
+                          <Check size={16} />
+                        </button>
+                        <button
+                          onClick={() => onStatus(i._id, "rejected")}
+                          className="rounded-full bg-red-100 p-2 text-red-700"
+                        >
+                          <X size={16} />
+                        </button>
+                      </>
+                    )}
                   {tab === "Campaign approvals" && (
                     <>
                       <button
@@ -827,9 +872,51 @@ function DataTable({
                       </button>
                     </>
                   )}
-                  {tab==="Manage users"&&<><select aria-label={`Role for ${i.name}`} value={i.role} onChange={e=>onUserRole(i._id,e.target.value)} className="rounded-xl bg-cream px-2 py-1"><option value="supporter">Supporter</option><option value="creator">Creator</option><option value="admin">Admin</option></select><button aria-label="Remove user" onClick={()=>onRemoveUser(i._id)} className="rounded-full bg-red-100 p-2 text-red-700"><Trash2 size={16}/></button></>}
-                  {tab==="Withdrawal requests"&&i.status==="pending"&&<button onClick={()=>onWithdrawal(i._id)} className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700">Payment success</button>}
-                  {tab==="Reports"&&<><button onClick={()=>onReport(i._id)} className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700">Resolve</button><button onClick={()=>onReport(i._id,"suspend")} className="rounded-full bg-amber-100 px-3 py-2 text-xs font-bold text-amber-700">Suspend</button></>}
+                  {tab === "Manage users" && (
+                    <>
+                      <select
+                        aria-label={`Role for ${i.name}`}
+                        value={i.role}
+                        onChange={(e) => onUserRole(i._id, e.target.value)}
+                        className="rounded-xl bg-cream px-2 py-1"
+                      >
+                        <option value="supporter">Supporter</option>
+                        <option value="creator">Creator</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <button
+                        aria-label="Remove user"
+                        onClick={() => onRemoveUser(i._id)}
+                        className="rounded-full bg-red-100 p-2 text-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </>
+                  )}
+                  {tab === "Withdrawal requests" && i.status === "pending" && (
+                    <button
+                      onClick={() => onWithdrawal(i._id)}
+                      className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700"
+                    >
+                      Payment success
+                    </button>
+                  )}
+                  {tab === "Reports" && (
+                    <>
+                      <button
+                        onClick={() => onReport(i._id)}
+                        className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700"
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        onClick={() => onReport(i._id, "suspend")}
+                        className="rounded-full bg-amber-100 px-3 py-2 text-xs font-bold text-amber-700"
+                      >
+                        Suspend
+                      </button>
+                    </>
+                  )}
                   {tab === "Manage campaigns" && (
                     <button
                       onClick={() => onDelete(i._id)}
