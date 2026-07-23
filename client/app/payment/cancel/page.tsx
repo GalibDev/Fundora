@@ -1,0 +1,2 @@
+import Link from "next/link";import {XCircle} from "lucide-react";
+export default function Cancel(){return <main className="grid min-h-screen place-items-center bg-cream p-6 text-center"><div className="card max-w-lg p-10"><XCircle className="mx-auto text-red-600" size={54}/><h1 className="mt-5 text-4xl font-black">Payment cancelled</h1><p className="mt-3 text-black/50">No charge was made and your credit balance has not changed.</p><Link href="/dashboard" className="btn-primary mt-7">Return to dashboard</Link></div></main>}

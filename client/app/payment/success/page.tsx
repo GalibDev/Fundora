@@ -1,0 +1,3 @@
+"use client";
+import Link from "next/link";import {CheckCircle2} from "lucide-react";import {useAuth} from "@/lib/auth";import {useEffect} from "react";
+export default function Success(){const {refresh}=useAuth();useEffect(()=>{const t=setTimeout(refresh,2000);return()=>clearTimeout(t)},[]);return <main className="grid min-h-screen place-items-center bg-cream p-6 text-center"><div className="card max-w-lg p-10"><CheckCircle2 className="mx-auto text-forest" size={54}/><h1 className="mt-5 text-4xl font-black">Payment received</h1><p className="mt-3 text-black/50">Stripe is verifying your payment. Your credits will appear automatically after the secure webhook completes.</p><Link href="/dashboard" className="btn-primary mt-7">View dashboard</Link></div></main>}

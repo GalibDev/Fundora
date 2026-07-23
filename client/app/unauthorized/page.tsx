@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function Unauthorized(){return <main className="grid min-h-screen place-items-center bg-cream p-6 text-center"><div><span className="eyebrow">Access denied</span><h1 className="mt-3 text-5xl font-black">This workspace isn&apos;t yours.</h1><p className="mt-4 text-black/50">Sign in with an account that has permission for this area.</p><Link href="/dashboard" className="btn-primary mt-7">Back to dashboard</Link></div></main>}
