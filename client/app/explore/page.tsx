@@ -7,6 +7,27 @@ import { Campaign } from "@/lib/types";
 import { Search, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { api } from "@/lib/api";
 import { campaigns as demo } from "@/lib/data";
+
+const PAGE_SIZE = 9;
+
+function getDemoCampaigns(query: string, category: string, sort: string, deadline: string, maxGoal: string, page: number) {
+  const search = query.trim().toLowerCase();
+  const maximum = Number(maxGoal);
+  const filtered = demo.filter((campaign) =>
+    (!search || campaign.title.toLowerCase().includes(search) || campaign.story.toLowerCase().includes(search) || campaign.creatorName.toLowerCase().includes(search)) &&
+    (category === "All" || campaign.category === category) &&
+    (!deadline || campaign.deadline <= deadline) &&
+    (!maxGoal || campaign.goal <= maximum),
+  );
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "deadline") return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+    if (sort === "newest") return b._id.localeCompare(a._id);
+    return b.raised - a.raised;
+  });
+  const pages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  return { items: sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), pages };
+}
+
 export default function Explore() {
   const [items, setItems] = useState<Campaign[]>([]);
   const [query, setQuery] = useState("");
@@ -18,6 +39,11 @@ export default function Explore() {
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const showDemoCampaigns = () => {
+    const result = getDemoCampaigns(query, category, sort, deadline, maxGoal, page);
+    setItems(result.items);
+    setPages(result.pages);
+  };
   const load = async () => {
     setLoading(true);
     setError("");
@@ -33,10 +59,14 @@ export default function Explore() {
       const data = await api<{ items: Campaign[]; pages: number }>(
         `/campaigns?${p}`,
       );
-      setItems(data.items.length ? data.items : demo);
-      setPages(data.items.length ? data.pages : 1);
+      if (data.items.length) {
+        setItems(data.items);
+        setPages(data.pages);
+      } else {
+        showDemoCampaigns();
+      }
     } catch (e) {
-      setItems(demo);
+      showDemoCampaigns();
       setError(
         e instanceof Error ? e.message : "Could not load live campaigns",
       );
