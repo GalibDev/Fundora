@@ -1,83 +1,154 @@
+<div align="center">
+
+![Fundora banner](https://capsule-render.vercel.app/api?type=waving&color=0:11261A,50:1B4332,100:C8F20B&height=220&section=header&text=Fundora&fontSize=76&fontColor=FFFFFF&animation=fadeIn&fontAlignY=38&desc=Small%20credits.%20Big%20beginnings.&descAlignY=58&descSize=20)
+
 # Fundora
 
-Fundora is a full-stack crowdfunding platform where supporters fund meaningful projects with credits, creators manage campaigns and withdrawals, and admins keep the ecosystem safe.
+### A modern, full-stack crowdfunding platform for supporters, creators, and administrators.
 
-## Demo access
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Fundora-C8F20B?style=for-the-badge&logo=vercel&logoColor=11261A)](https://fundora-hazel.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![License](https://img.shields.io/badge/License-MIT-1B4332?style=for-the-badge)](LICENSE)
 
-- Admin email: `admin@fundora.com`
-- Admin password: `Admin123!` (created by the seed script; change it before production)
-- Frontend live URL: not published yet — deploy `client` to Vercel and replace this line with the generated URL
-- Backend live URL: not published yet — deploy the Render Blueprint and replace this line with the generated URL
-- Repository: https://github.com/GalibDev/Fundora
+[Live site](https://fundora-hazel.vercel.app) · [Report a bug](https://github.com/GalibDev/Fundora/issues) · [Request a feature](https://github.com/GalibDev/Fundora/issues)
+
+</div>
+
+## Overview
+
+Fundora connects people who have meaningful ideas with supporters who want to fund them. Supporters purchase credits through Stripe, creators launch and manage campaigns, and administrators moderate the marketplace from a role-aware dashboard.
+
+## Preview
+
+<p align="center">
+  <a href="https://fundora-hazel.vercel.app">
+    <img src="https://image.thum.io/get/width/1200/crop/720/https://fundora-hazel.vercel.app" alt="Fundora home page preview" width="900" />
+  </a>
+</p>
+
+> The preview links to the live project. Open the live site for the complete responsive experience.
+
+## Highlights
+
+| Supporter | Creator | Administrator |
+| --- | --- | --- |
+| Explore campaigns and contribute with credits | Create, edit, and delete campaigns | Manage users and roles |
+| Track contribution status and history | Review pending contributions | Approve or reject campaigns |
+| Purchase credit packages through Stripe Checkout | Request withdrawals and view payment history | Process withdrawals and resolve reports |
+| Receive in-app notifications | See total, active, and raised campaign stats | View platform-wide supporters, creators, credits, and payments |
 
 ## Features
 
-- Three role-aware experiences for Supporters, Creators, and Admins
-- Secure JWT authentication that survives private-route refreshes
-- New Supporters receive 50 credits and Creators receive 20 exactly once
-- Responsive public site and dashboard for mobile, tablet, and desktop
-- Campaign discovery, keyword search, category filters, and campaign details
-- Contribution escrow with creator approval, rejection, and automatic refunds
-- Creator campaign management, earnings conversion, and withdrawal requests
-- Stripe Checkout credit packages with a verified webhook credit update
-- Admin campaign approvals, user roles, withdrawals, reports, and moderation
-- In-app notifications for contribution, campaign, and withdrawal decisions
-- Paginated contribution history and complete payment records
-- MongoDB transactions for balance-safe contribution processing
-- Zod and React Hook Form validation with friendly error feedback
-- Framer Motion landing-page animation and Recharts dashboard analytics
-- Cloud-ready environment templates with no committed credentials
+- Role-based JWT authentication: Supporter, Creator, and Admin
+- Google Sign-In with verified ID tokens
+- Responsive landing page with animated hero, top-funded, and closing-soon campaigns
+- Campaign search, category filters, sorting, pagination, and detailed campaign pages
+- ImgBB profile and campaign image uploads
+- Credit-based contribution workflow with creator approval/rejection
+- Automatic supporter refund when a contribution is rejected
+- Stripe test-mode Checkout credit packages and signed webhook fulfilment
+- Creator campaign, contribution-review, withdrawal, and payment tools
+- Admin moderation for users, campaigns, withdrawal requests, and reports
+- In-app notifications and optional transactional email notifications
+- Framer Motion animations, React Hook Form + Zod validation, and MongoDB transactions
 
-## Local setup
+## Technology
 
-Requirements: Node.js 20+ and a MongoDB Atlas database.
+| Layer | Tools |
+| --- | --- |
+| Frontend | Next.js 15, TypeScript, Tailwind CSS, TanStack Query, Framer Motion, Recharts |
+| Backend | Express.js, TypeScript, JWT, Zod |
+| Database | MongoDB Atlas with Mongoose |
+| Payments | Stripe Checkout and webhooks |
+| Media | ImgBB |
+| Deployment | Vercel (frontend) and Render (backend) |
+
+## Project structure
+
+```text
+Fundora/
+├── client/                 # Next.js application
+│   ├── app/                # Routes and pages
+│   ├── components/         # Reusable UI components
+│   └── lib/                # API, auth, data, and types
+├── server/                 # Express API
+│   └── src/
+│       ├── routes/         # Auth, campaigns, payments, admin, uploads
+│       ├── models/         # MongoDB schemas
+│       └── middleware/     # JWT and role guards
+├── render.yaml             # Render Blueprint
+└── LICENSE                 # MIT License
+```
+
+## Run locally
+
+**Requirements:** Node.js 20+ and a MongoDB Atlas database.
 
 ```bash
+git clone https://github.com/GalibDev/Fundora.git
+cd Fundora
 npm run install:all
 copy server\.env.example server\.env
 copy client\.env.example client\.env.local
 npm run dev
 ```
 
-Update both environment files. Seed the admin and sample campaigns:
+The frontend starts at `http://localhost:3000` and the API starts at `http://localhost:5000`.
 
-```bash
-npm run seed --prefix server
+## Environment variables
+
+### Frontend — `client/.env.local`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+NEXT_PUBLIC_IMGBB_KEY=your-imgbb-key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
-The client runs on `http://localhost:3000`; the API runs on `http://localhost:5000`.
+### Backend — `server/.env`
 
-## Stripe test setup
+```env
+PORT=5000
+MONGODB_URI=your-mongodb-atlas-uri
+JWT_SECRET=use-a-long-random-secret
+CLIENT_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=your-google-client-id
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+ADMIN_EMAIL=admin@fundora.com
+ADMIN_PASSWORD=choose-a-strong-password
+```
 
-Add Stripe test keys to the client/server environment files. Create a webhook for:
+Optional: add `RESEND_API_KEY` and `EMAIL_FROM` to enable email notifications.
 
-`https://YOUR-RENDER-URL/api/webhooks/stripe`
+> On every backend start, Fundora ensures the admin account from `ADMIN_EMAIL` and `ADMIN_PASSWORD` exists and is assigned the Admin role.
 
-Subscribe it to `checkout.session.completed` and copy the webhook signing secret to `STRIPE_WEBHOOK_SECRET`. Stripe's standard test card is `4242 4242 4242 4242` with any future expiry and CVC.
+## Stripe test mode
+
+Create a Stripe webhook endpoint at:
+
+```text
+https://YOUR-RENDER-SERVICE.onrender.com/api/webhooks/stripe
+```
+
+Subscribe to `checkout.session.completed` and store the signing secret in `STRIPE_WEBHOOK_SECRET`.
+
+Use Stripe's test card `4242 4242 4242 4242`, any future expiry date, and any CVC.
 
 ## Deploy
 
-1. Render: create a Blueprint from `render.yaml`, add the secret values, then deploy.
-2. Vercel: import this repository, set **Root Directory** to `client`, add the client variables, then deploy.
-3. Set `CLIENT_URL` on Render to the Vercel origin and `NEXT_PUBLIC_API_URL` on Vercel to `https://YOUR-RENDER-URL/api`.
-4. Run the seed script locally against the production Atlas database once.
+1. Deploy the `server` directory to Render using [`render.yaml`](render.yaml).
+2. Set the server variables, especially `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`.
+3. Import the repository into Vercel and set **Root Directory** to `client`.
+4. On Vercel set `NEXT_PUBLIC_API_URL` to `https://YOUR-RENDER-SERVICE.onrender.com/api`.
+5. Update Render `CLIENT_URL` with your Vercel URL, then redeploy both services.
 
-### Google Sign-In
+## License
 
-Create a Web OAuth client in Google Cloud Console. Add its client ID as
-`NEXT_PUBLIC_GOOGLE_CLIENT_ID` on Vercel and `GOOGLE_CLIENT_ID` on Render. Add
-both the Vercel origin and `http://localhost:3000` to the authorized origins.
+This project is licensed under the [MIT License](LICENSE).
 
-### Optional email notifications
+---
 
-Set `RESEND_API_KEY` and `EMAIL_FROM` on Render to enable transactional emails
-for campaign decisions and contribution decisions. If `RESEND_API_KEY` is
-empty, the platform continues to work using in-app notifications only.
-
-## Business rules
-
-- Supporters buy 10 credits per USD through the predefined packages.
-- Creators receive USD 1 per 20 approved credits.
-- Withdrawals require at least 200 available raised credits.
-- Contributions remain pending until the creator approves or rejects them.
-- Deleting a creator campaign refunds all its approved supporters.
+<div align="center">Built with care by <a href="https://github.com/GalibDev">GalibDev</a>.</div>
