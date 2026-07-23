@@ -39,24 +39,23 @@ const packs = [
 const navFor = (role: string) =>
   role === "admin"
     ? [
-        [Home, "Overview"],
+        [Home, "Home"],
         [Users, "Manage users"],
-        [ShieldCheck, "Campaign approvals"],
-        [WalletCards, "Withdrawal requests"],
         [FolderKanban, "Manage campaigns"],
+        [WalletCards, "Withdrawal requests"],
         [ReceiptText, "Reports"],
       ]
     : role === "creator"
       ? [
-          [Home, "Overview"],
-          [PlusCircle, "Add campaign"],
+          [Home, "Home"],
+          [PlusCircle, "Add new campaign"],
           [FolderKanban, "My campaigns"],
-          [Heart, "My contributions"],
+          [Heart, "Contribution reviews"],
           [WalletCards, "Withdrawals"],
           [ReceiptText, "Payment history"],
         ]
       : [
-          [Home, "Overview"],
+          [Home, "Home"],
           [Heart, "Explore campaigns"],
           [FolderKanban, "My contributions"],
           [Coins, "Purchase credits"],
@@ -66,7 +65,7 @@ export default function Dashboard() {
   const { user, loading, logout, refresh } = useAuth();
   const router = useRouter();
   const [menu, setMenu] = useState(false);
-  const [tab, setTab] = useState("Overview");
+  const [tab, setTab] = useState("Home");
   const [items, setItems] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -97,7 +96,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       setProfile({ name: user.name, photo: user.photo || "" });
-      loadTab("Overview");
+      loadTab("Home");
     }
   }, [user]);
   if (loading || !user)
@@ -112,7 +111,7 @@ export default function Dashboard() {
     setTab(t);
     setPage(p);
     try {
-      if (t === "My contributions") {
+      if (t === "My contributions" || t === "Contribution reviews") {
         const r = await api<{ items: Item[]; pages: number }>(
           `/contributions?page=${p}`,
         );
@@ -129,13 +128,11 @@ export default function Dashboard() {
         setItems(result.items);
       } else if (t === "Manage users") {
         setItems(await api<Item[]>("/admin/users"));
-      } else if (t === "Campaign approvals") {
-        setItems(await api<Item[]>("/admin/campaigns?status=pending"));
       } else if (t === "Manage campaigns") {
         setItems(await api<Item[]>("/admin/campaigns"));
       } else if (t === "Reports") {
         setItems(await api<Item[]>("/admin/reports"));
-      } else if (t === "Overview") {
+      } else if (t === "Home") {
         setItems([]);
         setDashboardStats(
           role === "admin"
@@ -185,7 +182,7 @@ export default function Dashboard() {
         body: JSON.stringify({ status }),
       });
       toast.success(`Contribution ${status}`);
-      loadTab("Overview");
+      loadTab("Contribution reviews");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Action failed");
     }
@@ -429,11 +426,11 @@ export default function Dashboard() {
         <div className="p-5 md:p-8">
           <p className="eyebrow">Good to see you</p>
           <h1 className="mt-2 text-3xl font-black md:text-4xl">
-            {tab === "Overview"
+            {tab === "Home"
               ? `Let’s move ideas forward, ${user.name.split(" ")[0]}.`
               : tab}
           </h1>
-          {tab === "Overview" && (
+          {tab === "Home" && (
             <>
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {stats.map(([l, v]) => (
@@ -452,7 +449,7 @@ export default function Dashboard() {
               </div>
             </>
           )}
-          {tab === "Add campaign" && (
+          {tab === "Add new campaign" && (
             <CampaignForm
               campaign={campaign}
               setCampaign={setCampaign}
@@ -497,10 +494,10 @@ export default function Dashboard() {
           )}{" "}
           {[
             "My contributions",
+            "Contribution reviews",
             "Payment history",
             "Withdrawal requests",
             "Manage users",
-            "Campaign approvals",
             "Manage campaigns",
             "Reports",
           ].includes(tab) && (
@@ -839,7 +836,7 @@ function DataTable({
                 <td className="p-3">{i.status || "—"}</td>
                 <td className="flex gap-2 p-3">
                   {role === "creator" &&
-                    tab === "My contributions" &&
+                    tab === "Contribution reviews" &&
                     i.status === "pending" && (
                       <>
                         <button
@@ -856,7 +853,7 @@ function DataTable({
                         </button>
                       </>
                     )}
-                  {tab === "Campaign approvals" && (
+                  {tab === "Manage campaigns" && i.status === "pending" && (
                     <>
                       <button
                         onClick={() => onApprove(i._id, "approved")}
