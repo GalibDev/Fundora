@@ -19,6 +19,11 @@ import CampaignCard from "./campaign-card";
 import { campaigns as fallback, testimonials } from "@/lib/data";
 import { Campaign } from "@/lib/types";
 import { api } from "@/lib/api";
+const closingSoon = (items: Campaign[]) =>
+  [...items]
+    .filter((campaign) => new Date(campaign.deadline).getTime() > Date.now())
+    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+    .slice(0, 6);
 const reveal = {
   initial: { opacity: 0, y: 22 },
   whileInView: { opacity: 1, y: 0 },
@@ -52,9 +57,9 @@ export default function Home() {
       () => setSlide((s) => (s + 1) % banners.length),
       5000,
     );
-    api<{ items: Campaign[] }>("/campaigns?limit=6&sort=highest")
-      .then((r) => setCampaigns(r.items.length ? r.items : fallback))
-      .catch(() => setCampaigns(fallback))
+    api<{ items: Campaign[] }>("/campaigns?limit=6&sort=deadline")
+      .then((r) => setCampaigns(r.items.length >= 6 ? closingSoon(r.items) : closingSoon(fallback)))
+      .catch(() => setCampaigns(closingSoon(fallback)))
       .finally(() => setCampaignLoading(false));
     return () => clearInterval(timer);
   }, []);
@@ -126,13 +131,13 @@ export default function Home() {
             className="mb-8 flex items-end justify-between"
           >
             <div>
-              <p className="eyebrow">Momentum matters</p>
+              <p className="eyebrow">Closing soon</p>
               <h2 className="mt-2 text-4xl font-black tracking-tight md:text-5xl">
-                Ideas people believe in
+                Back them before time runs out
               </h2>
             </div>
             <Link href="/explore" className="hidden font-bold md:block">
-              View all →
+              View more →
             </Link>
           </motion.div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
