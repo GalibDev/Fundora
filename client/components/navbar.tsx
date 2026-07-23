@@ -25,7 +25,7 @@ export default function Navbar() {
             <Link href="/dashboard" className="font-semibold">Dashboard</Link>
             <span className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-sm font-bold"><Coins size={16} />{user.credits}</span>
             <Link aria-label="Notifications" href="/dashboard" className="grid size-9 place-items-center rounded-full bg-white"><Bell size={17} /></Link>
-            <Link href="/dashboard" className="flex items-center gap-2"><img src={user.photo || "https://i.pravatar.cc/40"} alt={`${user.name} profile`} className="size-8 rounded-full object-cover" /><span className="text-xs"><b className="block">{user.name}</b><span className="capitalize text-black/45">{user.role}</span></span></Link>
+            <Link href="/dashboard" className="flex items-center gap-2">{user.photo ? <img src={user.photo} alt={`${user.name} profile`} className="size-8 rounded-full object-cover" /> : <span className="grid size-8 rounded-full bg-forest text-xs text-white place-items-center">{user.name.charAt(0).toUpperCase()}</span>}<span className="text-xs"><b className="block">{user.name}</b><span className="capitalize text-black/45">{user.role}</span></span></Link>
             <button onClick={logout} className="font-semibold">Logout</button>
           </> : <>
             <Link href="/login" className="font-semibold">Login</Link>

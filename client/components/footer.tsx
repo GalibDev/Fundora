@@ -11,7 +11,7 @@ const contacts = [
 
 export default function Footer() {
   return (
-    <footer className="mt-12 bg-ink text-white">
+    <footer className="mt-6 bg-ink text-white">
       <div className="container-app grid gap-10 py-14 md:grid-cols-3">
         <div>
           <div className="text-2xl font-black"><span className="text-lime">F</span>undora</div>

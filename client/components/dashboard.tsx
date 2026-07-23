@@ -371,10 +371,7 @@ export default function Dashboard() {
               onClick={() => setProfileOpen(true)}
               className="hidden items-center gap-2 rounded-full bg-cream px-3 py-2 text-sm font-bold md:flex"
             >
-              <img
-                src={user.photo || "https://i.pravatar.cc/40"}
-                className="size-6 rounded-full"
-              />
+              {user.photo ? <img src={user.photo} alt="Profile" className="size-6 rounded-full object-cover" /> : <span className="grid size-6 place-items-center rounded-full bg-forest text-xs text-white">{user.name.charAt(0).toUpperCase()}</span>}
               {user.name}
             </button>
             <div className="rounded-full bg-lime px-4 py-2 text-sm font-black">

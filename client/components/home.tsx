@@ -269,7 +269,7 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
-        <section className="container-app py-16">
+        <section className="container-app pb-8 pt-16">
           <div className="rounded-[2.5rem] bg-forest p-10 text-center text-white md:p-16">
             <ShieldCheck className="mx-auto text-lime" size={42} />
             <h2 className="mt-5 text-4xl font-black">
